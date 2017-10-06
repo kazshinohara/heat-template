@@ -1,0 +1,19 @@
+heat_template_version: 2017-09-01
+
+resources:
+  volume:
+    type: OS::Cinder::Volume
+    properties:
+      size: 1
+
+  volume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: volume }
+      instance_uuid: { get_resource: instance }
+
+  instance:
+    type: OS::Nova::Server
+    properties:
+      image: ba802f87-4deb-43d3-ae28-91b1aa821e89
+      flavor: m1.tiny
