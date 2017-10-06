@@ -1,0 +1,22 @@
+heat_template_version: 2016-04-08
+resources:
+  port01:
+      type: ECL::Network::Port
+      properties:
+          network_id: 63772bff-8a16-4018-9cae-3b1b6a7f64e2
+  vm01:
+    type: ECL::Compute::Server
+    properties:
+      name: vm01
+      image: ad936ae4-2983-4f23-9187-e47e82cb2725
+      flavor: "1CPU-4GB"
+      user_data_format: RAW
+      user_data:
+          str_replace:
+              template: |
+                  #!/bin/bash
+                  echo "Port id is $port_id" > /tmp/hoge.txt
+              params:
+                  $port_id: { get_resource: port01 }
+      networks:
+          - uuid: 63772bff-8a16-4018-9cae-3b1b6a7f64e2

@@ -1,0 +1,42 @@
+heat_template_version: 2016-04-08
+resources:
+  ECL__Compute__Server_a:
+    type: ECL::Compute::Server
+    properties:
+      name: "AP-TEST-INST2"
+      # image: "ad936ae4-2983-4f23-9187-e47e82cb2725"
+      flavor: "1CPU-4GB"
+      availability_zone: "zone1-groupa"
+      metadata:
+        vmha: false
+      user_data_format: "RAW"
+      user_data: "#!/bin/bash\nmkdir /export2\n/sbin/mkfs.ext4 /dev/vdc\necho \"/dev/vdc   /export2    ext4    defaults 1 2\"  >> /etc/fstab\nmount -a"
+      networks:
+        - uuid: 754f9e00-b4c1-420d-ad5c-d9382605ccec
+      block_device_mapping_v2:
+        - image_id: "ad936ae4-2983-4f23-9187-e47e82cb2725"
+          device_name: /dev/vda
+          boot_index: 0
+          volume_size: 40
+        - volume_id: { get_resource: ECL__Compute__Volume_a }
+          device_name: /dev/vdb
+          delete_on_termination: false
+          boot_index: 1
+          volume_size: 40
+        - volume_id: { get_resource: ECL__Compute__Volume_b }
+          device_name: /dev/vdc
+          delete_on_termination: false
+          boot_index: 2
+          volume_size: 40
+  ECL__Compute__Volume_a:
+    type: ECL::Compute::Volume
+    properties:
+      name: "AP-TEST-DISK03"
+      size: "40"
+      availability_zone: "zone1-groupa"
+  ECL__Compute__Volume_b:
+    type: ECL::Compute::Volume
+    properties:
+      name: "AP-TEST-DISK02"
+      size: "40"
+      availability_zone: "zone1-groupa"
